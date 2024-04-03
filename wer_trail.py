@@ -23,5 +23,7 @@ def map_to_pred(batch):
     return batch
 
 result = librispeech_eval.map(map_to_pred, remove_columns=["audio"])
-
-print("WER:", wer(result["text"], result["transcription"]))
+wer_value = wer(result["text"], result["transcription"])
+print("WER:", wer_value )
+with open("wer_results.txt", 'w') as f: 
+    f.write(wer_value)
