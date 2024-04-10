@@ -13,8 +13,8 @@ from transformers import pipeline
 from tqdm import tqdm
 from transformers.pipelines.pt_utils import KeyDataset
 from datasets import Dataset, DownloadConfig, DownloadMode, load_dataset
-from evaluate import load    
- 
+from evaluate import load
+
 tedlium = load_dataset("LIUM/tedlium", "release3", split="test")
 
 tedlium = tedlium.remove_columns([ "id", "gender", "speaker_id"])
@@ -24,10 +24,12 @@ def remove_special_characters(batch):
     batch["text"] = re.sub(chars_to_ignore_regex, '', batch["text"]).lower() + " "
     return batch
 tedlium = tedlium.map(remove_special_characters)
+
 def extract_all_chars(batch):
-  all_text = " ".join(batch["text"])
-  vocab = list(set(all_text))
-  return {"vocab": [vocab], "all_text": [all_text]}
+    all_text = " ".join(batch["text"])
+    vocab = list(set(all_text))
+    return {"vocab": vocab, "all_text": all_text}
+
 
 vocabs = tedlium.map(extract_all_chars, batched=True, batch_size=-1, keep_in_memory=True)
 model = Wav2Vec2ForCTC.from_pretrained(r'yongjian/wav2vec2-large-a')
