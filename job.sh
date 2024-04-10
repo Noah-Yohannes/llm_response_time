@@ -1,5 +1,4 @@
 # !/bin/bash
-
 # SBATCH --nodes=1
 # SBATCH --mem=32G
 # SBATCH --ntasks-per-node=16
@@ -31,5 +30,5 @@ pip install tf-keras
 
 conda activate /tmp/test2-env 
 
-python  WER.py
+python  WER_tedlium_trained.py
 conda deactivate
