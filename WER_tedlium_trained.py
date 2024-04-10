@@ -4,9 +4,8 @@
 from datasets import load_dataset
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
 import torch
-from jiwer import wer
+from jiwer import wer, cer, wil, wip, mer     #word error rate, character error rate, word information lost, word information preserved and match error rate
 
-# Fine-tunning the facebook speech recognition model
 
 tedlium_eval = load_dataset("LIUM/tedlium", "release3", split="test")
 model = Wav2Vec2ForCTC.from_pretrained("sanchit-gandhi/wav2vec2-large-tedlium").to("cuda")
@@ -23,4 +22,15 @@ def map_to_pred(batch):
 
 result = tedlium_eval.map(map_to_pred, batched=True, batch_size=1, remove_columns=["speech"])
 wer_result = wer(result["text"], result["transcription"])
+cer_result = cer(result["text"], result["transcription"])
+wil_result = wil(result["text"], result["transcription"])
+wip_result = wip(result["text"], result["transcription"])
+mer_result = mer(result["text"], result["transcription"])
 print("WER:", wer_result)
+print("CER:", cer_result)
+print("WIL:", wil_result)
+print("WIP:", wip_result)
+print("MER:", mer_result)
+
+
+
