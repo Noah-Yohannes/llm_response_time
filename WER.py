@@ -25,16 +25,22 @@ def remove_special_characters(batch):
     return batch
 tedlium = tedlium.map(remove_special_characters)
 
+print("++++++++++++++++++++++++++++++================================================  Tedlium special characters removed")
+
 def extract_all_chars(batch):
-    all_text = " ".join(batch["text"])
+  vocab_list = []  # Empty list to store vocab for each element
+  for element in batch["text"]:
+    all_text = element + " "
     vocab = list(set(all_text))
-    return {"vocab": vocab, "all_text": all_text}
+    vocab_list.append(vocab)
+  return {"vocab": vocab_list}
 
 
-vocabs = tedlium.map(extract_all_chars, batched=True, batch_size=-1, keep_in_memory=True)
+# vocabs = tedlium.map(extract_all_chars, batched=True, batch_size=-1, keep_in_memory=True)   # this line doesn't seem to have any role in the word error metric code 
 model = Wav2Vec2ForCTC.from_pretrained(r'yongjian/wav2vec2-large-a')
 processor = Wav2Vec2Processor.from_pretrained(r'yongjian/wav2vec2-large-a')
 
+print("++++++++++++++++++++++++++++++================================================  Speech recognition model and processor loaded correctly")
 
 
 if torch.cuda.is_available():
@@ -55,6 +61,9 @@ pipe = pipeline(
 
 all_predictions = []
 
+print("++++++++++++++++++++++++++++++================================================  te quiero demasiado will be executed next ")
+
+
 # run streamed inference
 for prediction in tqdm(
     pipe(
@@ -68,7 +77,6 @@ for prediction in tqdm(
     all_predictions.append(prediction["text"])
 
 #-------------- another cell 
-
 wer_metric = load("wer")
 
 wer_ortho = 100 * wer_metric.compute(
